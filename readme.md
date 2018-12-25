@@ -62,3 +62,5 @@ $data = ["name" => "张三", "age" => "222","key_name"=>"name1","info"=>["name1"
 {/if}
 
 ```
+
+> 支持php原生所有语法
