@@ -8,7 +8,14 @@ $config = ["tpl_dir" => __DIR__."/view","cache_dir"=>__DIR__."/cache"];
 
 
 
-$data = ["name" => "张三", "age" => "222","key_name"=>"name1","info"=>["name1"=>"李四"]];
+$data = ["name" => "张三", "age" => "222","key_name"=>"name1","info"=>["name1"=>"李四"],
+    "list"=>[
+        ["name"=>"任0"],
+        ["name"=>"任1"],
+        ["name"=>"任2"],
+        ["name"=>"任3"]
+    ]
+];
 \epii\template\View::display("a/index", $data);
 
 ```
