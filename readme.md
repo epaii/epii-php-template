@@ -1,4 +1,15 @@
 
+install
+
+```json
+{
+    "require": {
+        "epii/template-engine": ">=0.0.1"
+    }
+}
+```
+
+
 ```php
 require_once __DIR__ . "/vendor/autoload.php";
 
