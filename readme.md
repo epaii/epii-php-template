@@ -32,3 +32,26 @@ $data = ["name" => "张三", "age" => "222","key_name"=>"name1","info"=>["name1"
 ```
 {:date,Y-m-d H:i:s,$time_int} //$0 代表当前值，逗号隔开为参数顺序
 ```
+
+遍历与其他
+
+```
+{loop $list}
+
+    {$key},{$value.name}
+
+{/loop}
+
+
+{loop $list $mykey=>$myvalue}
+{$mykey},{$myvalue}
+{/loop}
+
+
+{if  $name=="aaa" }
+    1111111111
+{else}
+   00000000
+{/if}
+
+```
