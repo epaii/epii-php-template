@@ -15,7 +15,7 @@ require_once __DIR__ . "/vendor/autoload.php";
 
 $config = ["tpl_dir" => __DIR__."/view","cache_dir"=>__DIR__."/cache"];
 
-\epii\template\View::setEngine($config,\epii\template\engine\PhpViewEngine::class);
+\epii\template\View::setEngine($config);
 
 
 
@@ -88,3 +88,10 @@ $data = ["name" => "张三", "age" => "222","key_name"=>"name1","info"=>["name1"
 ```
 
 > 支持php原生所有语法
+
+支持第三方引擎 
+
+```
+View::setEngine($config,自定义模板引擎类);
+
+```
