@@ -105,6 +105,9 @@ class PhpViewEngine implements IEpiiViewEngine
         if ($outstring === null)
             $outstring = "";
         if ($function) {
+
+            $function = str_replace("\\,", "__dou__", $function);
+
             $function_array = explode(",", $function);
 
             $function = $function_array[0];
@@ -115,10 +118,44 @@ class PhpViewEngine implements IEpiiViewEngine
                 $function_array[$key] = $this->stringToPhpData($value);
             }
             $function = $function . "(" . implode(",", $function_array) . ")";
+            $function = str_replace("__dou__", ",", $function);
             $outstring = str_replace("\$0", $outstring, $function);
         }
 
         return $outstring;
+    }
+
+    private function stringToYuFaStart($fun_name, $arg_string)
+    {
+
+        $arg_string = trim($arg_string);
+        $args = array_filter(explode(" ", $arg_string), function ($item) {
+            return $item !== "";
+        });
+
+        if ($fun_name == "loop" || $fun_name == "foreach") {
+            if (!isset($args[1])) {
+                $args[1] = "\$key=>\$value";
+            }
+            return "foreach({$args[0]} as {$args[1]}):";
+        } else if ($fun_name == "if" || $fun_name == "else" || $fun_name == "elseif") {
+            return "$fun_name({$args[0]}):";
+        }
+        return "";
+    }
+
+    private function stringToYuFaEnd($fun_name)
+    {
+
+        if ($fun_name == "/loop" || $fun_name == "/foreach") {
+
+            return "endforeach;";
+        } else if ($fun_name == "/if") {
+            return "endif;";
+        } else if ($fun_name == "else") {
+            return "else:";
+        }
+        return "";
     }
 
     private function parse_tpl(string $tmpfile, string $compile_file)
@@ -129,14 +166,34 @@ class PhpViewEngine implements IEpiiViewEngine
         }
 
 
-        $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . "([\${+}].*?)" . $this->config["tpl_end"] . "/is", function ($match) {
-            $string = $this->stringToPhpData($match[1]);
+        $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . "\\$(.*?)" . $this->config["tpl_end"] . "/is", function ($match) {
+            $string = $this->stringToPhpData("\$".$match[1]);
             return "<?php echo $string; ?>";
         }, file_get_contents($tmpfile));
         $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . ":(.*?)" . $this->config["tpl_end"] . "/is", function ($match) {
             $string = $this->stringToPhpData("|" . $match[1]);
             return "<?php echo $string; ?>";
         }, $txt);
+
+
+
+        $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . "(.*?)" . $this->config["tpl_end"] . "/is", function ($match1) {
+
+            $match1[1] = rtrim(trim($match1[1]), ";");
+
+            if (($pox = stripos($match1[1]," "))>0)
+            {
+                $string = $this->stringToYuFaStart(substr($match1[1],0,$pox),  substr($match1[1],$pox));
+            }else{
+                $string = $this->stringToYuFaEnd($match1[1]);
+            }
+
+
+            return "<?php   $string  ?>";
+        }, $txt);
+
+
+
 
         if (!is_dir($todir = dirname($compile_file))) {
             mkdir($todir, 0777, true);
