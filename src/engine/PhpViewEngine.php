@@ -25,6 +25,13 @@ class PhpViewEngine implements IEpiiViewEngine
             mkdir($this->config["cache_dir"], 0777, true);
         }
 
+        if (!isset($this->config["tpl_begin"])) {
+            $this->config["tpl_begin"] = "\\{";
+        }
+        if (!isset($this->config["tpl_end"])) {
+            $this->config["tpl_end"] = "\\}";
+        }
+
 
     }
 
@@ -122,11 +129,11 @@ class PhpViewEngine implements IEpiiViewEngine
         }
 
 
-        $txt = preg_replace_callback("/\{([\${+}].*?)\}/is", function ($match) {
+        $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . "([\${+}].*?)" . $this->config["tpl_end"] . "/is", function ($match) {
             $string = $this->stringToPhpData($match[1]);
             return "<?php echo $string; ?>";
         }, file_get_contents($tmpfile));
-        $txt = preg_replace_callback("/\{:(.*?)\}/is", function ($match) {
+        $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . ":(.*?)" . $this->config["tpl_end"] . "/is", function ($match) {
             $string = $this->stringToPhpData("|" . $match[1]);
             return "<?php echo $string; ?>";
         }, $txt);
