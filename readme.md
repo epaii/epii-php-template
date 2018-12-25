@@ -92,6 +92,7 @@ $data = ["name" => "张三", "age" => "222","key_name"=>"name1","info"=>["name1"
 支持第三方引擎 
 
 ```
-View::setEngine($config,自定义模板引擎类);
+View::setEngine($config,自定义模板引擎类默认为\epii\template\engine\PhpViewEngine::class);
+//第三方类只需实现 接口 epii\template\i\IEpiiViewEngine
 
 ```
