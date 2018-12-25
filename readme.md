@@ -37,7 +37,7 @@ $data = ["name" => "张三", "age" => "222","key_name"=>"name1","info"=>["name1"
 也可以
 
 ```
-{:date,Y-m-d H:i:s,$time_int} //$0 代表当前值，逗号隔开为参数顺序
+{:date,Y-m-d H:i:s,$time_int} //
 ```
 
 遍历与其他
