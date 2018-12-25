@@ -65,9 +65,22 @@ $data = ["name" => "张三", "age" => "222","key_name"=>"name1","info"=>["name1"
 {$mykey},{$myvalue}
 {/loop}
 
+{foreach $list}
+
+    {$key},{$value.name}
+
+{/foreach}
+
+
+{foreach $list $mykey=>$myvalue}
+{$mykey},{$myvalue}
+{/foreach}
+
 
 {if  $name=="aaa" }
     1111111111
+{elseif $name=="cccc"}
+    333333
 {else}
    00000000
 {/if}
