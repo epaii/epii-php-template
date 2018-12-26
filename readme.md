@@ -31,6 +31,22 @@ $data = ["name" => "张三", "age" => "222","key_name"=>"name1","info"=>["name1"
 
 ```
 
+其它方法
+
+```php
+View::fetch($file, $data);
+View::display($file, $data);
+View::fetchContent($content, $data);
+View::displayContent($content, $data);
+
+//自定义规则
+View::addStringRule($string_find, $string_replace);
+View::addPregRule($preg_find, $replace_string);
+View::addPregRuleCallBack($preg_find, callable $replace);
+
+```
+
+
 在模板文件中 a/index.php
 
 ```
