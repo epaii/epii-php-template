@@ -14,4 +14,5 @@ interface IEpiiViewEngine
     public function init(Array $config);
 
     public function fetch(string $file, Array $args=null);
+    public function parseString(string $string, Array $args=null);
 }

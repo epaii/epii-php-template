@@ -1,6 +1,7 @@
 <?php
 namespace epii\template\engine;
 
+use app\test;
 use epii\template\i\IEpiiViewEngine;
 
 
@@ -159,6 +160,7 @@ class EpiiViewEngine implements IEpiiViewEngine
         return "";
     }
 
+
     private function parse_tpl(string $tmpfile, string $compile_file)
     {
         if (!is_file($tmpfile)) {
@@ -166,30 +168,7 @@ class EpiiViewEngine implements IEpiiViewEngine
             return false;
         }
 
-
-        $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . "\\$(.*?)" . $this->config["tpl_end"] . "/is", function ($match) {
-            $string = $this->stringToPhpData("\$" . $match[1]);
-            return "<?php echo $string; ?>";
-        }, file_get_contents($tmpfile));
-        $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . ":(.*?)" . $this->config["tpl_end"] . "/is", function ($match) {
-            $string = $this->stringToPhpData("|" . $match[1]);
-            return "<?php echo $string; ?>";
-        }, $txt);
-
-
-        $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . "(.*?)" . $this->config["tpl_end"] . "/is", function ($match1) {
-
-            $match1[1] = rtrim(trim($match1[1]), ";");
-
-            if (($pox = stripos($match1[1], " ")) > 0) {
-                $string = $this->stringToYuFaStart(substr($match1[1], 0, $pox), substr($match1[1], $pox));
-            } else {
-                $string = $this->stringToYuFaEnd($match1[1]);
-            }
-
-
-            return "<?php   $string  ?>";
-        }, $txt);
+        $txt = $this->compileString(file_get_contents($tmpfile));
 
 
         if (!is_dir($todir = dirname($compile_file))) {
@@ -212,5 +191,47 @@ class EpiiViewEngine implements IEpiiViewEngine
     public static function require_config_keys()
     {
         return ["tpl_dir", "cache_dir"];
+    }
+
+    public function compileString(string $txt)
+    {
+        $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . "\\$(.*?)" . $this->config["tpl_end"] . "/is", function ($match) {
+            $string = $this->stringToPhpData("\$" . $match[1]);
+            return "<?php echo $string; ?>";
+        }, $txt);
+        $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . ":(.*?)" . $this->config["tpl_end"] . "/is", function ($match) {
+            $string = $this->stringToPhpData("|" . $match[1]);
+            return "<?php echo $string; ?>";
+        }, $txt);
+
+
+        $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . "(.*?)" . $this->config["tpl_end"] . "/is", function ($match1) {
+
+            $match1[1] = rtrim(trim($match1[1]), ";");
+
+            if (($pox = stripos($match1[1], " ")) > 0) {
+                $string = $this->stringToYuFaStart(substr($match1[1], 0, $pox), substr($match1[1], $pox));
+            } else {
+                $string = $this->stringToYuFaEnd($match1[1]);
+            }
+
+
+            return "<?php   $string  ?>";
+        }, $txt);
+
+        return $txt;
+    }
+
+    public function parseString(string $string, Array $args = null)
+    {
+        ob_start();
+        if ($args !== null)
+            extract($args);
+
+        eval('?> ' .$this->compileString($string). ' <?php ');
+
+        $content = ob_get_contents();
+        ob_clean();
+        return $content;
     }
 }

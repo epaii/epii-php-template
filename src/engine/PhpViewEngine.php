@@ -48,4 +48,16 @@ class PhpViewEngine implements IEpiiViewEngine
     {
         return ["tpl_dir"];
     }
+
+    public function parseString(string $string, Array $args = null)
+    {
+        // TODO: Implement parseString() method.
+        ob_start();
+        if ($args !== null)
+            extract($args);
+        eval('?> ' . $string . ' <?php ');
+        $content = ob_get_contents();
+        ob_clean();
+        return $content;
+    }
 }

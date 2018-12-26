@@ -74,6 +74,17 @@ class View
 
     public static function fetch(string $file, Array $args = null, string $engine = null)
     {
+        return self::fetchContent($file, $args, $engine);
+    }
+
+
+    public static function parseString($string, Array $args = null, string $engine = null)
+    {
+        return self::fetchContent($string, $args, $engine, false);
+    }
+
+    private static function fetchContent(string $file, Array $args = null, string $engine = null, $is_file = true)
+    {
         if ($engine === null) {
             $engine = self::$engine;
         }
@@ -85,7 +96,10 @@ class View
         $engine_mod = new $engine();
         if ($engine_mod instanceof IEpiiViewEngine) {
             $engine_mod->init(self::$config);
-            $out = $engine_mod->fetch($file, $args);
+            if ($is_file)
+                $out = $engine_mod->fetch($file, $args);
+            else
+                $out = $engine_mod->parseString($file, $args);
             if (isset(self::$replace_string[0])) {
                 $out = str_replace(self::$replace_string[0], self::$replace_string[1], $out);
             }
@@ -101,6 +115,5 @@ class View
             echo "It is not a right tmplate engine!";
             exit();
         }
-
     }
 }
