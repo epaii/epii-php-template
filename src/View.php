@@ -74,16 +74,22 @@ class View
 
     public static function fetch(string $file, Array $args = null, string $engine = null)
     {
-        return self::fetchContent($file, $args, $engine);
+        return self::parseContent($file, $args, $engine);
     }
 
 
-    public static function parseString($string, Array $args = null, string $engine = null)
+    public static function fetchContent($content, Array $args = null, string $engine = null)
     {
-        return self::fetchContent($string, $args, $engine, false);
+        return self::parseContent($content, $args, $engine, false);
     }
 
-    private static function fetchContent(string $file, Array $args = null, string $engine = null, $is_file = true)
+    public static function displayContent($content, Array $args = null, string $engine = null)
+    {
+        echo self::parseContent($content, $args, $engine, false);
+        exit;
+    }
+
+    private static function parseContent(string $file, Array $args = null, string $engine = null, $is_file = true)
     {
         if ($engine === null) {
             $engine = self::$engine;
