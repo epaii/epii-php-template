@@ -46,8 +46,19 @@ View::addPregRuleCallBack($preg_find, callable $replace);
 
 ```
 
+支持第三方引擎 
+
+```
+View::setEngine($config,支持自定义模板引擎类,默认为\epii\template\engine\EpiiViewEngine::class);
+// 如果使用纯php本身语言为模板，只需使用\epii\template\engine\PhpViewEngine::class  即可
+//第三方类只需实现 接口 epii\template\i\IEpiiViewEngine
+
+```
+
 
 在模板文件中 a/index.php
+
+>  以下语法为默认模板引擎\epii\template\engine\EpiiViewEngine::class
 
 ```
 {$name} ,{$info.name1},{$info.$key_name}//方法一
@@ -105,11 +116,3 @@ View::addPregRuleCallBack($preg_find, callable $replace);
 
 > 支持php原生所有语法
 
-支持第三方引擎 
-
-```
-View::setEngine($config,支持自定义模板引擎类,默认为\epii\template\engine\EpiiViewEngine::class);
-// 如果使用纯php本身语言为模板，只需使用\epii\template\engine\PhpViewEngine::class  即可
-//第三方类只需实现 接口 epii\template\i\IEpiiViewEngine
-
-```
