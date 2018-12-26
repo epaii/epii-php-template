@@ -117,5 +117,12 @@ View::setEngine($config,支持自定义模板引擎类,默认为\epii\template\e
 
 ```
 
+包含其它模板文件
+
+```
+{include a/b}
+
+```
+
 > 支持php原生所有语法
 
