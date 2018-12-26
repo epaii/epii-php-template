@@ -23,6 +23,8 @@ class View
 
     private static $replace_string = [];
 
+    private static $comon_data = [];
+
     public static function setEngine(Array $config, string $engine = null)
     {
         self::$engine = $engine == null ? EpiiViewEngine::class : $engine;
@@ -65,6 +67,13 @@ class View
 
     }
 
+    public static function addCommonData(Array $data)
+    {
+        if ($data) {
+            self::$comon_data = array_merge(self::$comon_data, $data);
+        }
+    }
+
 
     public static function display(string $file, Array $args = null, string $engine = null)
     {
@@ -89,11 +98,28 @@ class View
         exit;
     }
 
+    private static function getArgs(Array $args = null)
+    {
+        $out = [];
+        if (self::$comon_data) {
+            $out = self::$comon_data;
+        }
+        $out["_view"] = ["config" => self::$config, "get" => $_GET, "post" => $_POST, "cookie" => $_COOKIE, "server" => $_SERVER];
+
+        if ($args) {
+            $out = array_merge($out, $args);
+        }
+        return $out;
+    }
+
     private static function parseContent(string $file, Array $args = null, string $engine = null, $is_file = true)
     {
         if ($engine === null) {
             $engine = self::$engine;
         }
+
+        $args = self::getArgs($args);
+
         if (!class_exists($engine)) {
             echo "tmplate engine not exists!";
             exit();

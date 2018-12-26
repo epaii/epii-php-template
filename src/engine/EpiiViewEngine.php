@@ -1,7 +1,6 @@
 <?php
 namespace epii\template\engine;
 
-use app\test;
 use epii\template\i\IEpiiViewEngine;
 
 
@@ -142,6 +141,15 @@ class EpiiViewEngine implements IEpiiViewEngine
             return "foreach({$args[0]} as {$args[1]}):";
         } else if ($fun_name == "if" || $fun_name == "else" || $fun_name == "elseif") {
             return "$fun_name({$args[0]}):";
+        } else if ($fun_name == "include" || $fun_name == "include_file") {
+
+
+            if (isset($args[0])) {
+
+            return " include_once \$this->get_compile_file('".$this->config["tpl_dir"]."/{$args[0]}.php'); ";
+
+            }
+
         }
         return "";
     }
@@ -228,7 +236,7 @@ class EpiiViewEngine implements IEpiiViewEngine
         if ($args !== null)
             extract($args);
 
-        eval('?> ' .$this->compileString($string). ' <?php ');
+        eval('?> ' . $this->compileString($string) . ' <?php ');
 
         $content = ob_get_contents();
         ob_clean();

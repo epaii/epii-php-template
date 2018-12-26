@@ -39,6 +39,9 @@ View::display($file, $data);
 View::fetchContent($content, $data);
 View::displayContent($content, $data);
 
+
+View::addCommonData(Array $data);//设置公共数据
+
 //自定义规则
 View::addStringRule($string_find, $string_replace);
 View::addPregRule($preg_find, $replace_string);
