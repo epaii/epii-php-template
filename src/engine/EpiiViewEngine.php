@@ -45,6 +45,7 @@ class EpiiViewEngine implements IEpiiViewEngine
             ob_start();
             if ($args !== null)
                 extract($args);
+            $__in_epii_view_engine = 1;
             include_once $this->get_compile_file($tmpfile);
             $content = ob_get_contents();
             ob_clean();
@@ -167,7 +168,7 @@ class EpiiViewEngine implements IEpiiViewEngine
 
 
         $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . "\\$(.*?)" . $this->config["tpl_end"] . "/is", function ($match) {
-            $string = $this->stringToPhpData("\$".$match[1]);
+            $string = $this->stringToPhpData("\$" . $match[1]);
             return "<?php echo $string; ?>";
         }, file_get_contents($tmpfile));
         $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . ":(.*?)" . $this->config["tpl_end"] . "/is", function ($match) {
@@ -176,15 +177,13 @@ class EpiiViewEngine implements IEpiiViewEngine
         }, $txt);
 
 
-
         $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . "(.*?)" . $this->config["tpl_end"] . "/is", function ($match1) {
 
             $match1[1] = rtrim(trim($match1[1]), ";");
 
-            if (($pox = stripos($match1[1]," "))>0)
-            {
-                $string = $this->stringToYuFaStart(substr($match1[1],0,$pox),  substr($match1[1],$pox));
-            }else{
+            if (($pox = stripos($match1[1], " ")) > 0) {
+                $string = $this->stringToYuFaStart(substr($match1[1], 0, $pox), substr($match1[1], $pox));
+            } else {
                 $string = $this->stringToYuFaEnd($match1[1]);
             }
 
@@ -193,11 +192,12 @@ class EpiiViewEngine implements IEpiiViewEngine
         }, $txt);
 
 
-
-
         if (!is_dir($todir = dirname($compile_file))) {
             mkdir($todir, 0777, true);
         }
+
+        $txt = "<?php if(!isset(\$__in_epii_view_engine)){exit;} ?>" . $txt;
+
         if (file_put_contents($compile_file, $txt)) {
             return $compile_file;
 
