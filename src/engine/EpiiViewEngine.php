@@ -74,6 +74,8 @@ class EpiiViewEngine implements IEpiiViewEngine
 
     private function stringToPhpData(string $string)
     {
+
+
         $string = trim($string);
         $string = trim($string, ";");
 
@@ -90,6 +92,7 @@ class EpiiViewEngine implements IEpiiViewEngine
 
         $outstring = null;
 
+
         foreach ($array as $value) {
             if (stripos($value, "\$") === 0) {
                 if ($outstring === null)
@@ -97,6 +100,17 @@ class EpiiViewEngine implements IEpiiViewEngine
                 else
                     $outstring .= "[" . $value . "]";
             } else {
+
+
+                if (stripos($value, '($') !== false) {
+
+                    $value = preg_replace_callback('/\(\$(.*?)\)/is', function ($m) {
+                        return "\".\${$m[1]}.\"";
+                    }, $value);
+
+
+                }
+
                 if ($outstring === null)
                     $outstring = "\"" . $value . "\"";
                 else
@@ -146,7 +160,7 @@ class EpiiViewEngine implements IEpiiViewEngine
 
             if (isset($args[0])) {
 
-            return " include_once \$this->get_compile_file('".$this->config["tpl_dir"]."/{$args[0]}.php'); ";
+                return " include_once \$this->get_compile_file('" . $this->config["tpl_dir"] . "/{$args[0]}.php'); ";
 
             }
 
