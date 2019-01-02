@@ -13,11 +13,18 @@ use epii\template\View;
  */
 class EpiiViewEngine implements IEpiiViewEngine
 {
-    public static $view_parse = [];
+    private static $view_parse = [];
 
     public static function addParser(string $tag_name, callable $begine_parser, callable $end_parser = null)
     {
         self::$view_parse[$tag_name] = [$begine_parser, $end_parser];
+    }
+
+    private static $view_fun = [];
+
+    public static function addFunction(string $tag_name, callable $do)
+    {
+        self::$view_fun[$tag_name] = $do;
     }
 
     private $config = [];
@@ -140,7 +147,10 @@ class EpiiViewEngine implements IEpiiViewEngine
             foreach ($function_array as $key => $value) {
                 $function_array[$key] = $this->stringToPhpData($value);
             }
-            $function = $function . "(" . implode(",", $function_array) . ")";
+            if (isset(self::$view_fun[$function])) {
+                $function = "self::\$view_fun[\"{$function}\"]";
+            }
+            $function = ($function) . "(" . implode(",", $function_array) . ")";
             $function = str_replace("__dou__", ",", $function);
             $outstring = str_replace("\$0", $outstring, $function);
         }
@@ -168,8 +178,7 @@ class EpiiViewEngine implements IEpiiViewEngine
 
             if (isset($args[0])) {
 
-                if ( (stripos($args[0],"\"")!==0 )  && stripos($args[0],"\'")!==0 )
-                {
+                if ((stripos($args[0], "\"") !== 0) && stripos($args[0], "\'") !== 0) {
                     $args[0] = "\"{$args[0]}\"";
                 }
                 return " include_once \$this->get_compile_file('" . $this->config["tpl_dir"] . "/'.{$args[0]}.'.php'); ";
