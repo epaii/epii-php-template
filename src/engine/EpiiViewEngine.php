@@ -168,7 +168,11 @@ class EpiiViewEngine implements IEpiiViewEngine
 
             if (isset($args[0])) {
 
-                return " include_once \$this->get_compile_file('" . $this->config["tpl_dir"] . "/{$args[0]}.php'); ";
+                if ( (stripos($args[0],"\"")!==0 )  && stripos($args[0],"\'")!==0 )
+                {
+                    $args[0] = "\"{$args[0]}\"";
+                }
+                return " include_once \$this->get_compile_file('" . $this->config["tpl_dir"] . "/'.{$args[0]}.'.php'); ";
 
             }
 
@@ -231,6 +235,9 @@ class EpiiViewEngine implements IEpiiViewEngine
 
     public function compileString(string $txt)
     {
+        $txt = str_replace("\\{", "__da_kuo_hao_start__", $txt);
+        $txt = str_replace("\\}", "__da_kuo_hao_end__", $txt);
+
         $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . "\\$(.*?)" . $this->config["tpl_end"] . "/is", function ($match) {
             $string = $this->stringToPhpData("\$" . $match[1]);
             return "<?php echo $string; ?>";
@@ -255,6 +262,8 @@ class EpiiViewEngine implements IEpiiViewEngine
             return "<?php   $string  ?>";
         }, $txt);
 
+        $txt = str_replace("__da_kuo_hao_start__", "{", $txt);
+        $txt = str_replace("__da_kuo_hao_end__", "}", $txt);
         return $txt;
     }
 
