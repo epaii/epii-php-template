@@ -267,6 +267,9 @@ class EpiiViewEngine implements IEpiiViewEngine
                 $string = $this->stringToYuFaEnd($match1[1]);
             }
 
+            if ($string === "") {
+                return $match1[0];
+            }
 
             return "<?php   $string  ?>";
         }, $txt);
