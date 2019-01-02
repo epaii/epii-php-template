@@ -2,6 +2,7 @@
 namespace epii\template\engine;
 
 use epii\template\i\IEpiiViewEngine;
+use epii\template\View;
 
 
 /**
@@ -12,6 +13,13 @@ use epii\template\i\IEpiiViewEngine;
  */
 class EpiiViewEngine implements IEpiiViewEngine
 {
+    public static $view_parse = [];
+
+    public static function addParser(string $tag_name, callable $begine_parser, callable $end_parser = null)
+    {
+        self::$view_parse[$tag_name] = [$begine_parser, $end_parser];
+    }
+
     private $config = [];
 
     public function init(Array $config)
@@ -164,9 +172,13 @@ class EpiiViewEngine implements IEpiiViewEngine
 
             }
 
+        } else if (in_array($fun_name, array_keys(self::$view_parse))) {
+            return call_user_func(self::$view_parse[$fun_name][0], $args);
+
         }
         return "";
     }
+
 
     private function stringToYuFaEnd($fun_name)
     {
@@ -178,6 +190,8 @@ class EpiiViewEngine implements IEpiiViewEngine
             return "endif;";
         } else if ($fun_name == "else") {
             return "else:";
+        } else if (in_array($fun_name = substr($fun_name, 1), array_keys(self::$view_parse))) {
+            return call_user_func(self::$view_parse[$fun_name][1], null);
         }
         return "";
     }

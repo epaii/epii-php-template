@@ -25,6 +25,8 @@ class View
 
     private static $comon_data = [];
 
+
+
     public static function setEngine(Array $config, string $engine = null)
     {
         self::$engine = $engine == null ? EpiiViewEngine::class : $engine;
@@ -44,6 +46,8 @@ class View
         }
 
     }
+
+
 
     public static function addStringRule($string_find, $string_replace)
     {
