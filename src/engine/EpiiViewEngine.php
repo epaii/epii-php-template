@@ -173,8 +173,11 @@ class EpiiViewEngine implements IEpiiViewEngine
             return "foreach({$args[0]} as {$args[1]}):";
         } else if ($fun_name == "if" || $fun_name == "else" || $fun_name == "elseif") {
             return "$fun_name({$args[0]}):";
-        } else if ($fun_name == "echo"  ) {
-            return "$fun_name \"".str_replace("\"","\\\"",$args[0])."\";";
+        } else if ($fun_name == "echo") {
+            return "$fun_name \"" . str_replace("\"", "\\\"", $args[0]) . "\";";
+        } else if ($fun_name == "print" || $fun_name == "dump" || $fun_name == "print_r") {
+            return "print_r({$args[0]}); ";
+
         } else if ($fun_name == "include" || $fun_name == "include_file") {
 
 
@@ -188,8 +191,10 @@ class EpiiViewEngine implements IEpiiViewEngine
             }
 
         } else if (in_array($fun_name, array_keys(self::$view_parse))) {
-            return "echo \"".str_replace("\"","\\\"",call_user_func(self::$view_parse[$fun_name][0], $args))."\";";
+            return "echo \"" . str_replace("\"", "\\\"", call_user_func(self::$view_parse[$fun_name][0], $args)) . "\";";
 
+        } else if (function_exists($fun_name)) {
+            return "$fun_name({$args[0]}); ";
         }
         return "";
     }
@@ -205,7 +210,7 @@ class EpiiViewEngine implements IEpiiViewEngine
             return "endif;";
         } else if ($fun_name == "else") {
             return "else:";
-        } else if (in_array($fun_name = substr($fun_name, 1), array_keys(self::$view_parse))) {
+        } else if (in_array($fun_name = substr($fun_name, 1), array_keys(self::$view_parse)) &&  (self::$view_parse[$fun_name][1] !== null) ) {
             return call_user_func(self::$view_parse[$fun_name][1], null);
         }
         return "";
