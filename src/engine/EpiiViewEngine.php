@@ -173,6 +173,8 @@ class EpiiViewEngine implements IEpiiViewEngine
             return "foreach({$args[0]} as {$args[1]}):";
         } else if ($fun_name == "if" || $fun_name == "else" || $fun_name == "elseif") {
             return "$fun_name({$args[0]}):";
+        } else if ($fun_name == "echo"  ) {
+            return "$fun_name \"".str_replace("\"","\\\"",$args[0])."\";";
         } else if ($fun_name == "include" || $fun_name == "include_file") {
 
 
@@ -186,7 +188,7 @@ class EpiiViewEngine implements IEpiiViewEngine
             }
 
         } else if (in_array($fun_name, array_keys(self::$view_parse))) {
-            return call_user_func(self::$view_parse[$fun_name][0], $args);
+            return "echo \"".str_replace("\"","\\\"",call_user_func(self::$view_parse[$fun_name][0], $args))."\";";
 
         }
         return "";
