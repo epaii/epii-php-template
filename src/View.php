@@ -79,24 +79,24 @@ class View
     }
 
 
-    public static function display(string $file, Array $args = null, string $engine = null)
+    public static function display(string $file, Array $args = null, IEpiiViewEngine $engine = null)
     {
         echo self::fetch($file, $args, $engine);
         exit;
     }
 
-    public static function fetch(string $file, Array $args = null, string $engine = null)
+    public static function fetch(string $file, Array $args = null, IEpiiViewEngine $engine = null)
     {
         return self::parseContent($file, $args, $engine);
     }
 
 
-    public static function fetchContent($content, Array $args = null, string $engine = null)
+    public static function fetchContent($content, Array $args = null, IEpiiViewEngine $engine = null)
     {
         return self::parseContent($content, $args, $engine, false);
     }
 
-    public static function displayContent($content, Array $args = null, string $engine = null)
+    public static function displayContent($content, Array $args = null, IEpiiViewEngine $engine = null)
     {
         echo self::parseContent($content, $args, $engine, false);
         exit;
@@ -116,7 +116,7 @@ class View
         return $out;
     }
 
-    private static function parseContent(string $file, Array $args = null, string $engine = null, $is_file = true)
+    private static function parseContent(string $file, Array $args = null, IEpiiViewEngine $engine = null, $is_file = true)
     {
         if ($engine === null) {
             $engine = self::$engine;
@@ -129,7 +129,13 @@ class View
             exit();
         }
 
-        $engine_mod = new $engine();
+        if (is_string($engine))
+        {
+            $engine_mod = new $engine();
+        }else{
+            $engine_mod = $engine;
+        }
+
         if ($engine_mod instanceof IEpiiViewEngine) {
             $engine_mod->init(self::$config);
             if ($is_file)
