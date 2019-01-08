@@ -26,7 +26,6 @@ class View
     private static $comon_data = [];
 
 
-
     public static function setEngine(Array $config, string $engine = null)
     {
         self::$engine = $engine == null ? EpiiViewEngine::class : $engine;
@@ -46,7 +45,6 @@ class View
         }
 
     }
-
 
 
     public static function addStringRule($string_find, $string_replace)
@@ -129,15 +127,17 @@ class View
             exit();
         }
 
-        if (is_string($engine))
-        {
+        if (is_string($engine)) {
             $engine_mod = new $engine();
-        }else{
+            if ($engine_mod instanceof IEpiiViewEngine) {
+                $engine_mod->init(self::$config);
+            }
+        } else {
             $engine_mod = $engine;
         }
 
         if ($engine_mod instanceof IEpiiViewEngine) {
-            $engine_mod->init(self::$config);
+
             if ($is_file)
                 $out = $engine_mod->fetch($file, $args);
             else
