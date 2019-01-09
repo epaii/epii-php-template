@@ -122,12 +122,13 @@ class View
 
         $args = self::getArgs($args);
 
-        if (!class_exists($engine)) {
-            echo "tmplate engine not exists!";
-            exit();
-        }
 
         if (is_string($engine)) {
+
+            if (!class_exists($engine)) {
+                echo "tmplate engine not exists!";
+                exit();
+            }
             $engine_mod = new $engine();
             if ($engine_mod instanceof IEpiiViewEngine) {
                 $engine_mod->init(self::$config);
