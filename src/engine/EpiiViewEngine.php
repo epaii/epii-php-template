@@ -264,8 +264,11 @@ class EpiiViewEngine implements IEpiiViewEngine
         }, $txt);
 
 
-        $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . "(.*?)" . $this->config["tpl_end"] . "/is", function ($match1) {
+        $txt = preg_replace_callback("/" . $this->config["tpl_begin"] . "([^" . $this->config["tpl_begin"] . "]*?)" . $this->config["tpl_end"] . "/is", function ($match1) {
 
+            if (stripos($match1[1], " ") === 0) {
+                return $match1[0];
+            }
             $match1[1] = rtrim(trim($match1[1]), ";");
 
             if (($pox = stripos($match1[1], " ")) > 0) {
