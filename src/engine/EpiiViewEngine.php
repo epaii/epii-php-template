@@ -1,4 +1,5 @@
 <?php
+
 namespace epii\template\engine;
 
 use epii\template\i\IEpiiViewEngine;
@@ -47,43 +48,35 @@ class EpiiViewEngine implements IEpiiViewEngine
             $this->config["tpl_end"] = "\\}";
         }
 
-        self::addFunction("options",function($list,$select_value=null){
+        self::addFunction("options", function ($list, $select_value = null) {
 
 
-            if (  is_array($list))
-            {
+            if (is_array($list)) {
                 $out = "";
-                foreach ($list as $key=>$value)
-                {
-                    if (!is_array($value))
-                    {
-                        $out.="<option value='".$key."'>".$value."</option>";
-                    }else{
+                foreach ($list as $key => $value) {
+                    if (!is_array($value)) {
+                        $out .= "<option value='" . $key . "'>" . $value . "</option>";
+                    } else {
                         $_v = $key;
-                        if (isset($value["id"]))
-                        {
+                        if (isset($value["id"])) {
                             $_v = $value["id"];
                         }
-                        if (isset($value["value"]))
-                        {
+                        if (isset($value["value"])) {
                             $_v = $value["value"];
                         }
                         $_name = "";
-                        if (isset($value["name"]))
-                        {
+                        if (isset($value["name"])) {
                             $_name = $value["name"];
                         }
-                        if (isset($value["text"]))
-                        {
+                        if (isset($value["text"])) {
                             $_name = $value["text"];
                         }
                         $select = "";
                         // var_dump($args);
-                        if (  ($select_value!==null && $_v==$select_value)  || (isset($value["selected"]) && $value["selected"]))
-                        {
+                        if (($select_value !== null && $_v == $select_value) || (isset($value["selected"]) && $value["selected"])) {
                             $select = "selected";
                         }
-                        $out.="<option value='".$_v."' ".$select.">".$_name."</option>";
+                        $out .= "<option value='" . $_v . "' " . $select . ">" . $_name . "</option>";
 
                     }
                 }
@@ -91,7 +84,6 @@ class EpiiViewEngine implements IEpiiViewEngine
 
             return $out;
         });
-
 
 
     }
@@ -212,6 +204,7 @@ class EpiiViewEngine implements IEpiiViewEngine
             return $item !== "";
         });
 
+
         if ($fun_name == "loop" || $fun_name == "foreach") {
             if (!isset($args[1])) {
                 $args[1] = "\$key=>\$value";
@@ -237,12 +230,38 @@ class EpiiViewEngine implements IEpiiViewEngine
             }
 
         } else if (in_array($fun_name, array_keys(self::$view_parse))) {
+
+            $args = $this->attrParse($args);
             return "echo \"" . str_replace("\"", "\\\"", call_user_func(self::$view_parse[$fun_name][0], $args)) . "\";";
 
         } else if (function_exists($fun_name)) {
             return "$fun_name({$args[0]}); ";
         }
         return "";
+    }
+
+
+    private function attrParse(array $args)
+    {
+        $new = [];
+        foreach ($args as $key => $value) {
+            $value = str_replace("\\=", "__denghao__", $value);
+            if (stripos($value, "=") > 0) {
+                unset($args[$key]);
+                list($name, $v) = explode("=", $value);
+                $new[$name] = str_replace("__denghao__", "=", $v);;
+            }else{
+                $args[$key] = str_replace("__denghao__", "=", $value);
+            }
+        }
+
+        $i = 0;
+        foreach ($args as $value) {
+            $new[$i++] = $value;
+        }
+        return $new;
+
+
     }
 
 
@@ -256,7 +275,7 @@ class EpiiViewEngine implements IEpiiViewEngine
             return "endif;";
         } else if ($fun_name == "else") {
             return "else:";
-        } else if (in_array($fun_name = substr($fun_name, 1), array_keys(self::$view_parse)) &&  (self::$view_parse[$fun_name][1] !== null) ) {
+        } else if (in_array($fun_name = substr($fun_name, 1), array_keys(self::$view_parse)) && (self::$view_parse[$fun_name][1] !== null)) {
             return call_user_func(self::$view_parse[$fun_name][1], null);
         }
         return "";
