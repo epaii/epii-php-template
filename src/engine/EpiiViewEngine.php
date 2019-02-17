@@ -92,6 +92,11 @@ class EpiiViewEngine implements IEpiiViewEngine
     public function fetch(string $file, Array $args = null)
     {
         $tmpfile = $this->config["tpl_dir"] . DIRECTORY_SEPARATOR . $file . ".php";
+
+        if (!file_exists($tmpfile)) {
+            $tmpfile = $this->config["tpl_dir"] . DIRECTORY_SEPARATOR . $file . ".html";
+        }
+
         if (!file_exists($tmpfile)) {
             return "";
         } else {
@@ -225,7 +230,12 @@ class EpiiViewEngine implements IEpiiViewEngine
                 if ((stripos($args[0], "\"") !== 0) && stripos($args[0], "\'") !== 0) {
                     $args[0] = "\"{$args[0]}\"";
                 }
-                return " include_once \$this->get_compile_file('" . $this->config["tpl_dir"] . "/'.{$args[0]}.'.php'); ";
+                $file = $this->config["tpl_dir"] . '/' . $args[0] . '.php';
+                if (!file_exists($file)) {
+                    $file = $this->config["tpl_dir"] . '/' . $args[0] . '.html';
+                }
+
+                return " include_once \$this->get_compile_file('" . $file . "'); ";
 
             }
 
@@ -250,7 +260,7 @@ class EpiiViewEngine implements IEpiiViewEngine
                 unset($args[$key]);
                 list($name, $v) = explode("=", $value);
                 $new[$name] = str_replace("__denghao__", "=", $v);;
-            }else{
+            } else {
                 $args[$key] = str_replace("__denghao__", "=", $value);
             }
         }
