@@ -214,9 +214,18 @@ class EpiiViewEngine implements IEpiiViewEngine
             if (!isset($args[1])) {
                 $args[1] = "\$key=>\$value";
             }
+            if (strtolower($args[1])=="as")
+            {
+                if (!isset($args[2])) {
+                    $args[2] = "\$key=>\$value";
+                }
+                $args[1] = $args[2];
+
+            }
+
             return "foreach({$args[0]} as {$args[1]}):";
         } else if ($fun_name == "if" || $fun_name == "else" || $fun_name == "elseif") {
-            return "$fun_name({$args[0]}):";
+            return "$fun_name({$arg_string}):";
         } else if ($fun_name == "echo") {
             return "$fun_name \"" . str_replace("\"", "\\\"", $args[0]) . "\";";
         } else if ($fun_name == "print" || $fun_name == "dump" || $fun_name == "print_r") {
