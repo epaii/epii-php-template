@@ -208,14 +208,16 @@ class EpiiViewEngine implements IEpiiViewEngine
         $args = array_filter(explode(" ", $arg_string), function ($item) {
             return $item !== "";
         });
+        array_walk($args, function (&$value) {
+            $value = $this->stringToPhpData($value);
+        });
 
 
         if ($fun_name == "loop" || $fun_name == "foreach") {
             if (!isset($args[1])) {
                 $args[1] = "\$key=>\$value";
             }
-            if (strtolower($args[1])=="as")
-            {
+            if (strtolower($args[1]) == "as") {
                 if (!isset($args[2])) {
                     $args[2] = "\$key=>\$value";
                 }
@@ -247,7 +249,8 @@ class EpiiViewEngine implements IEpiiViewEngine
                 return " include_once \$this->get_compile_file('" . $file . "'); ";
 
             }
-
+        } else if ($fun_name == "?") {
+            return "echo isset(" . $args[0] . ")?" . $args[0] . ":" . (isset($args[1]) ? $args[1] : "\"\";");
         } else if (in_array($fun_name, array_keys(self::$view_parse))) {
 
             $args = $this->attrParse($args);
