@@ -208,9 +208,6 @@ class EpiiViewEngine implements IEpiiViewEngine
         $args = array_filter(explode(" ", $arg_string), function ($item) {
             return $item !== "";
         });
-        array_walk($args, function (&$value) {
-            $value = $this->stringToPhpData($value);
-        });
 
 
         if ($fun_name == "loop" || $fun_name == "foreach") {
@@ -250,6 +247,9 @@ class EpiiViewEngine implements IEpiiViewEngine
 
             }
         } else if ($fun_name == "?") {
+            array_walk($args, function (&$value) {
+                $value = $this->stringToPhpData($value);
+            });
             return "echo isset(" . $args[0] . ")?" . $args[0] . ":" . (isset($args[1]) ? $args[1] : "\"\";");
         } else if (in_array($fun_name, array_keys(self::$view_parse))) {
 
