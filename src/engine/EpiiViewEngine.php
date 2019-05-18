@@ -116,6 +116,7 @@ class EpiiViewEngine implements IEpiiViewEngine
 
     private function get_compile_file(string $tmpfile)
     {
+
         if (isset($this->config["just_php"]) && $this->config["just_php"]) {
             return $tmpfile;
         }
@@ -235,15 +236,19 @@ class EpiiViewEngine implements IEpiiViewEngine
 
             if (isset($args[0])) {
 
-                if ((stripos($args[0], "\"") !== 0) && stripos($args[0], "\'") !== 0) {
-                    $args[0] = "\"{$args[0]}\"";
-                }
-                $file = $this->config["tpl_dir"] . '/' . $args[0] . '.php';
-                if (!file_exists($file)) {
-                    $file = $this->config["tpl_dir"] . '/' . $args[0] . '.html';
-                }
 
-                return " include_once \$this->get_compile_file('" . $file . "'); ";
+
+//                if ((stripos($args[0], "\"") !== 0) && stripos($args[0], "\'") !== 0) {
+//                    $args[0] = "\"{$args[0]}\"";
+//                }
+                $args[0] =  str_replace(["\"","\'"],["",""],$args[0]);
+
+                $file_pre  = $this->config["tpl_dir"] . '/' . $args[0] ;
+//                if (!file_exists($file)) {
+//                    $file = $this->config["tpl_dir"] . '/' . $args[0] ;
+//                }
+
+                return " \$___file_pre_= \"".$file_pre."\"; if(!file_exists(\$__file_ = \$___file_pre_.\".php\")) \$__file_= \$___file_pre_.\".html\"; include \$this->get_compile_file(\$__file_); ";
 
             }
         } else if ($fun_name == "?") {
