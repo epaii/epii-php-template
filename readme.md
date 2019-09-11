@@ -80,6 +80,21 @@ View::setEngine($config,支持自定义模板引擎类,默认为\epii\template\e
 ```
 {:date,Y-m-d H:i:s,$time_int} //
 ```
+ 
+函数中的参数如果有","号，用"\\,"代替
+
+如
+``` 
+{:rtrim,aaa\,,\,}// 相当于 echo rtrim("aaa,",",");
+```
+
+函数中的参数如果有变量，可以直接写变量，但如果使用变量连接则用"\\{\\}"来区分变量
+ 
+ 如
+ ``` 
+ {:rtrim,aaa\,,$a} // 相当于 echo rtrim("aaa,",$a);
+ {:rtrim,aaa\,,aa\{$a\}bb} // 相当于 echo rtrim("aaa,","aa".$a."bb");
+ ```
 
 遍历与其他
 
@@ -121,7 +136,22 @@ View::setEngine($config,支持自定义模板引擎类,默认为\epii\template\e
 
 ```
 {include a/b}
+{include a/b\{$a\}}
+{include "a/b\{$a\}"}
 
+```
+
+?号语法
+
+```
+{? $a 1}  
+{? $a b} 
+
+```
+相当于
+``` 
+<?php   echo isset($a)?$a:"1"  ?> //
+<?php   echo isset($a)?$a:"b"  ?>
 ```
 
 > 支持php原生所有语法
