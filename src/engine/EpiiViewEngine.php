@@ -55,7 +55,12 @@ class EpiiViewEngine implements IEpiiViewEngine
                 $out = "";
                 foreach ($list as $key => $value) {
                     if (!is_array($value)) {
-                        $out .= "<option value='" . $key . "'>" . $value . "</option>";
+                        $select = "";
+                        // var_dump($args);
+                        if ($select_value !== null && $value == $select_value  ) {
+                            $select = "selected";
+                        }
+                        $out .= "<option value='" . $key . "' {$select}>" . $value . "</option>";
                     } else {
                         $_v = $key;
                         if (isset($value["id"])) {
