@@ -57,7 +57,7 @@ class EpiiViewEngine implements IEpiiViewEngine
                     if (!is_array($value)) {
                         $select = "";
                         // var_dump($args);
-                        if ($select_value !== null && $key == $select_value  ) {
+                        if ($select_value !== null && $key == $select_value) {
                             $select = "selected";
                         }
                         $out .= "<option value='" . $key . "' {$select}>" . $value . "</option>";
@@ -139,12 +139,20 @@ class EpiiViewEngine implements IEpiiViewEngine
     private function stringToPhpData(string $string)
     {
 
-
         $string = trim($string);
         $string = trim($string, ";");
 
         $tmep_arr = explode("|", $string);
         $string = $tmep_arr[0];
+        $isset = false;
+        $isset_default = "\"\"";
+
+        if (($wenhaoindex = stripos($string, '?')) > 0) {
+            $isset_default = substr($string, $wenhaoindex + 1);
+            $string = substr($string, 0, $wenhaoindex);
+            $isset = true;
+
+        }
         if (isset($tmep_arr[1])) {
             $function = $tmep_arr[1];
         } else {
@@ -183,11 +191,19 @@ class EpiiViewEngine implements IEpiiViewEngine
         }
         if ($outstring === null)
             $outstring = "";
+
+
+        if ($isset) {
+
+            $outstring = "isset(" . $outstring . ")?" . $outstring . ":(".$outstring."=" . $isset_default.")";
+        }
         if ($function) {
 
             $function = str_replace("\\,", "__dou__", $function);
 
             $function_array = explode(",", $function);
+
+
 
             $function = $function_array[0];
             unset($function_array[0]);
@@ -228,7 +244,7 @@ class EpiiViewEngine implements IEpiiViewEngine
 
             }
 
-            return "foreach({$args[0]} as {$args[1]}):";
+            return "foreach(" . $this->stringToPhpData($args[0]) . " as {$args[1]}):";
         } else if ($fun_name == "if" || $fun_name == "else" || $fun_name == "elseif") {
             return "$fun_name({$arg_string}):";
         } else if ($fun_name == "echo") {
@@ -242,18 +258,17 @@ class EpiiViewEngine implements IEpiiViewEngine
             if (isset($args[0])) {
 
 
-
 //                if ((stripos($args[0], "\"") !== 0) && stripos($args[0], "\'") !== 0) {
 //                    $args[0] = "\"{$args[0]}\"";
 //                }
-                $args[0] =  str_replace(["\"","\'"],["",""],$args[0]);
+                $args[0] = str_replace(["\"", "\'"], ["", ""], $args[0]);
 
-                $file_pre  = $this->config["tpl_dir"] . '/' . $args[0] ;
+                $file_pre = $this->config["tpl_dir"] . '/' . $args[0];
 //                if (!file_exists($file)) {
 //                    $file = $this->config["tpl_dir"] . '/' . $args[0] ;
 //                }
 
-                return " \$___file_pre_= \"".$file_pre."\"; if(!file_exists(\$__file_ = \$___file_pre_.\".php\")) \$__file_= \$___file_pre_.\".html\"; include \$this->get_compile_file(\$__file_); ";
+                return " \$___file_pre_= \"" . $file_pre . "\"; if(!file_exists(\$__file_ = \$___file_pre_.\".php\")) \$__file_= \$___file_pre_.\".html\"; include \$this->get_compile_file(\$__file_); ";
 
             }
         } else if ($fun_name == "?") {
