@@ -107,7 +107,9 @@ class View
             $out = self::$comon_data;
         }
         $out["_view"] = ["config" => self::$config, "get" => $_GET, "post" => $_POST, "cookie" => $_COOKIE, "server" => $_SERVER];
-
+        if (isset($_SESSION)) {
+            $out["_view"]["session"] = $_SESSION;
+        }
         if ($args) {
             $out = array_merge($out, $args);
         }
