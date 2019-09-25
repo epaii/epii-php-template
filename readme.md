@@ -173,5 +173,17 @@ View::setEngine($config,支持自定义模板引擎类,默认为\epii\template\e
  
 ```
 
+
+默认参数
+
+```
+{$_view.get.}
+{$_view.post.}
+{$_view.server.}
+{$_view.cookie.}
+{$_view.sesstion.}
+
+```
+
 > 支持php原生所有语法
 
