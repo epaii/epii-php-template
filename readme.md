@@ -154,5 +154,20 @@ View::setEngine($config,支持自定义模板引擎类,默认为\epii\template\e
 <?php   echo isset($a)?$a:"b"  ?>
 ```
 
+```
+{$name?"张三"}
+{$info["age"]?"18岁"}
+{$info.age?"18岁"}
+{loop $list.info?[]}
+
+```
+相当于
+``` 
+<?php   echo isset($name)?$name:($name="张三");  ?> //
+<?php   echo isset($info["age"])?$info["age"]:($info["age"]="张三");  ?> //
+<?php  foreach(isset($list["info"])?$list["info"]:($list["info"]="张三") as $key=>$value)  ?> //
+ 
+```
+
 > 支持php原生所有语法
 
