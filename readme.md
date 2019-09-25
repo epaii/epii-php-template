@@ -153,7 +153,7 @@ View::setEngine($config,支持自定义模板引擎类,默认为\epii\template\e
 <?php   echo isset($a)?$a:"1"  ?> //
 <?php   echo isset($a)?$a:"b"  ?>
 ```
-
+并且
 ```
 {$name?"张三"}
 {$info["age"]?"18岁"}
