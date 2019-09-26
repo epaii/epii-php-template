@@ -145,13 +145,16 @@ class EpiiViewEngine implements IEpiiViewEngine
         $tmep_arr = explode("|", $string);
         $string = $tmep_arr[0];
         $isset = false;
-        $isset_default = "\"\"";
+        $isset_default = "";
 
         if (($wenhaoindex = stripos($string, '?')) > 0) {
             $isset_default = substr($string, $wenhaoindex + 1);
             $string = substr($string, 0, $wenhaoindex);
             $isset = true;
 
+        }
+        if (strlen($isset_default) == 0) {
+            $isset_default = "\"\"";
         }
         if (isset($tmep_arr[1])) {
             $function = $tmep_arr[1];
@@ -195,14 +198,13 @@ class EpiiViewEngine implements IEpiiViewEngine
 
         if ($isset) {
 
-            $outstring = "isset(" . $outstring . ")?" . $outstring . ":(".$outstring."=" . $isset_default.")";
+            $outstring = "isset(" . $outstring . ")?" . $outstring . ":(" . $outstring . "=" . $isset_default . ")";
         }
         if ($function) {
 
             $function = str_replace("\\,", "__dou__", $function);
 
             $function_array = explode(",", $function);
-
 
 
             $function = $function_array[0];
