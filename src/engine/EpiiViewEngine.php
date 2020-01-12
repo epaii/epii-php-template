@@ -28,7 +28,7 @@ class EpiiViewEngine implements IEpiiViewEngine
         self::$view_fun[$tag_name] = $do;
     }
 
-    private $config = [];
+    protected $config = [];
 
     public function init(Array $config)
     {
@@ -96,15 +96,13 @@ class EpiiViewEngine implements IEpiiViewEngine
 
     public function fetch(string $file, Array $args = null)
     {
-        $tmpfile = $this->config["tpl_dir"] . DIRECTORY_SEPARATOR . $file . ".php";
 
-        if (!file_exists($tmpfile)) {
-            $tmpfile = $this->config["tpl_dir"] . DIRECTORY_SEPARATOR . $file . ".html";
-        }
 
-        if (!file_exists($tmpfile)) {
+        if (!($tmpfile = $this->get_file_path_and_name($file))) {
+
             return "";
         } else {
+
             ob_start();
             if ($args !== null)
                 extract($args);
@@ -126,9 +124,10 @@ class EpiiViewEngine implements IEpiiViewEngine
             return $tmpfile;
         }
         $compile_file = $this->config["cache_dir"] . DIRECTORY_SEPARATOR . md5($tmpfile) . ".php";
-        if (file_exists($compile_file) && (filemtime($compile_file) > filemtime($tmpfile))) {
+        if (file_exists($compile_file) && (filemtime($compile_file) > $this->get_filemtime($tmpfile))) {
 
         } else {
+
             $this->parse_tpl($tmpfile, $compile_file);
 
         }
@@ -333,12 +332,9 @@ class EpiiViewEngine implements IEpiiViewEngine
 
     private function parse_tpl(string $tmpfile, string $compile_file)
     {
-        if (!is_file($tmpfile)) {
 
-            return false;
-        }
 
-        $txt = $this->compileString(file_get_contents($tmpfile));
+        $txt = $this->compileString($this->file_get_contents($tmpfile));
 
 
         if (!is_dir($todir = dirname($compile_file))) {
@@ -415,4 +411,29 @@ class EpiiViewEngine implements IEpiiViewEngine
         ob_clean();
         return $content;
     }
+
+    public function get_file_path_and_name($file)
+    {
+        $tmpfile = $this->config["tpl_dir"] . DIRECTORY_SEPARATOR . $file . ".php";
+
+        if (!file_exists($tmpfile)) {
+            $tmpfile = $this->config["tpl_dir"] . DIRECTORY_SEPARATOR . $file . ".html";
+        }
+        if (file_exists($tmpfile)) {
+            return $tmpfile;
+        }
+        return false;
+
+    }
+
+    public function get_filemtime($file)
+    {
+        return filemtime($file);
+    }
+
+    public function file_get_contents($file)
+    {
+        return file_get_contents($file);
+    }
+
 }
