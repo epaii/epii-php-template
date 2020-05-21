@@ -70,7 +70,13 @@ class View
                 exit();
             }
         }
-
+    }
+    public static function changeConfig(Array $config){
+        if(self::$config){
+            if($config){
+                self::$config = array_merge(self::$config,$config);
+            }
+        }
     }
 
 
