@@ -280,7 +280,9 @@ class EpiiViewEngine implements IEpiiViewEngine
         } else if (in_array($fun_name, array_keys(self::$view_parse))) {
 
             $args = $this->attrParse($args);
-            return "echo \"" . str_replace("\"", "\\\"", call_user_func(self::$view_parse[$fun_name][0], $args)) . "\";";
+           // return "echo \"" . str_replace("\"", "\\\"", call_user_func(self::$view_parse[$fun_name][0], $args)) . "\";";
+           return "echo  self::\$view_parse[\"".$fun_name."\"][0](".str_replace([" => '","',"],[" => ",","], var_export( $args,true)).");";
+
 
         } else if (function_exists($fun_name)) {
             return "$fun_name({$args[0]}); ";
@@ -297,9 +299,9 @@ class EpiiViewEngine implements IEpiiViewEngine
             if (stripos($value, "=") > 0) {
                 unset($args[$key]);
                 list($name, $v) = explode("=", $value);
-                $new[$name] = str_replace("__denghao__", "=", $v);;
+                $new[$name] = str_replace("__denghao__", "=", $this->stringToPhpData($v));;
             } else {
-                $args[$key] = str_replace("__denghao__", "=", $value);
+                $args[$key] = str_replace("__denghao__", "=", $this->stringToPhpData($value));
             }
         }
 
