@@ -103,14 +103,27 @@ class EpiiViewEngine implements IEpiiViewEngine
             return "";
         } else {
 
-            ob_start();
+            $need_end = false;
+            if (ob_get_level() == 1) {
+                ob_start();
+                $need_end = true;
+            }
+
+
             if ($args !== null)
                 extract($args);
             $__in_epii_view_engine = 1;
-            include_once $this->get_compile_file($tmpfile);
-            $content = ob_get_contents();
-            ob_clean();
-            return $content;
+            include $this->get_compile_file($tmpfile);
+
+
+            if ($need_end) {
+                $content = ob_get_contents();
+                ob_clean();
+                return $content;
+            } else {
+                //
+                return "";
+            }
         }
 
 
