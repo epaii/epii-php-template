@@ -93,40 +93,46 @@ class EpiiViewEngine implements IEpiiViewEngine
 
     }
 
-
-    public function fetch(string $file, Array $args = null)
+ 
+    private $stack_list = [];
+    private function getCurretStackIndex()
+    {
+        return count($this->stack_list) - 1;
+    }
+    public function fetch(string $file, array $args = null)
     {
 
 
         if (!($tmpfile = $this->get_file_path_and_name($file))) {
-
             return "";
         } else {
-
-            $need_end = false;
-            if (ob_get_level() == 1) {
-                ob_start();
-                $need_end = true;
+            //得到已有的并且复制
+            $need_start = false;
+            if (ob_get_level() > 0) {
+                if ($this->getCurretStackIndex() >= 0) {
+                    $this->stack_list[$this->getCurretStackIndex()] = $this->stack_list[$this->getCurretStackIndex()] . ob_get_contents();
+                    ob_clean();
+                    $need_start = true;
+                }
             }
-
-
+            array_push($this->stack_list, "");
+            ob_start();
             if ($args !== null)
                 extract($args);
             $__in_epii_view_engine = 1;
+
             include $this->get_compile_file($tmpfile);
 
-
-            if ($need_end) {
-                $content = ob_get_contents();
-                ob_clean();
-                return $content;
-            } else {
-                //
-                return "";
+            $this->stack_list[$this->getCurretStackIndex()] = $this->stack_list[$this->getCurretStackIndex()] . ob_get_contents();
+            ob_clean();
+            if(  $need_start){
+                ob_start();
             }
+            return array_pop($this->stack_list);
         }
 
 
+        
     }
 
 
